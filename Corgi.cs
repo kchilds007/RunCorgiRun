@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using Random = UnityEngine.Random;
 
 public class Corgi : MonoBehaviour
 {
 	private bool isDrunk = false;
+	private bool isPlastered = false;
     private SpriteRenderer spriteRenderer;
 	public Sprite drunkSprite;
 	public Sprite soberSprite;
@@ -14,6 +16,34 @@ public class Corgi : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
+
+	public void Update()
+	{
+		if(isPlastered)
+		{	
+			MoveRandomly();
+		}
+	}
+	
+	private void MoveRandomly()
+	{
+		int direction = Random.Range(0,4);
+		switch (direction)
+		{
+			case 0:
+				Move(new Vector2(1,0));
+				break;
+			case 1:
+				Move(new Vector2(-1,0));
+				break;
+			case 2:
+				Move(new Vector2(0,1));
+				break;
+			case 3:
+				Move(new Vector2(0,-1));
+				break;
+		}
+	}
 
     public void Move(Vector2 direction)
     {
@@ -66,6 +96,23 @@ public class Corgi : MonoBehaviour
 			print("Pill");
 		}	
 	}
+
+	public void OnCollisionEnter2D(Collision2D other)
+	{
+		if(other.collider.tag == "Moonshine")
+		{
+			Destroy(other.gameObject);
+			GetPlastered();
+		}
+	}
+
+	private void GetPlastered()
+	{
+		isPlastered = true;
+		ChangeToDrunkSprite();
+		StartSoberingUp();
+	}
+
 	public void GetDrunk()
 	{
 		isDrunk = true;
@@ -96,6 +143,7 @@ public class Corgi : MonoBehaviour
 	{
 		ChangeToSoberSprite();
 		isDrunk = false;
+		isPlastered = false;
 	}
 	public void ChangeToSoberSprite()
 	{
